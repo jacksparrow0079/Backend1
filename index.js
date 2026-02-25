@@ -21,7 +21,7 @@ mongoose.connect(process.env.MONGO_URI)
 app.use("/api",userRouter);
 app.use("/api/channel",channelRouter);
 app.get("/",(req,res)=>{
-    return res.status(200).json({message:"welcome to youtube Backend"});
+    return res.status(200).json({message:"welcome to youtube"});
 })
 app.use("/api/video",VideoRouter);
 
