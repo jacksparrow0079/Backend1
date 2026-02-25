@@ -9,7 +9,7 @@ const createUser = async (req, res) => {
       email,
     });
     await newUser.save();
-    res.json(newUser);
+    return res.status(201).json(newUser);
   } catch (err) {
     console.log("err", err.mesage);
   }
