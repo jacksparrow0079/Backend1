@@ -9,7 +9,7 @@ app.use(express.json());
 
 // Home route
 app.get("/", (req, res) => {
-  res.send("Server is running 🚀");
+  res.send("Server is running mru 🚀");
 });
 
 // Example API route
