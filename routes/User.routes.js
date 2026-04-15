@@ -5,7 +5,7 @@ const {createUser, getUsers}=require("../controllers/user.controller.js");
 //router 
 const router =express.Router();
 // api's
-router.post("/CreateUser",createUser)
+router.post("/create-user",createUser)
 
 router.get("/getUsers",getUsers);
 

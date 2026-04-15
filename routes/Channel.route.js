@@ -4,7 +4,7 @@ const {createChannel, getAccountdetails, getAllDetails}=require("../controllers/
 
 //router 
 const router = express.Router();
-router.post("/CreateChannel",createChannel)
+router.post("/create-channel",createChannel)
 router.get("/GetAccountDetails",getAccountdetails)
 router.get("/GetAllDetails/:userId",getAllDetails);
 module.exports=router;

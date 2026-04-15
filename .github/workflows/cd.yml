@@ -19,3 +19,22 @@ jobs:
 
       - name: Push Docker Image
         run: docker push vivek00070/ytbackend:latest
+
+  aws-deploy:
+     needs: deploy
+     runs-on: self-hosted
+
+     steps:
+      - uses: actions/checkout@v4
+
+      - name: pull latest Docker Image
+        run: docker pull vivek00070/ytbackend:latest
+      
+      - name: Stop and Remove existing container
+        run: docker rm -f ytbackend || true
+
+      - name: Run Redis inside Container
+        run: docker run -d --name redis redis:latest
+
+      - name: Run Docker Container
+        run: docker run -d --name ytbackend --link redis:redis -p 3000:3000 -e MONGO_URI=${{ secrets.MONGO_URI }} vivek00070/ytbackend:latest

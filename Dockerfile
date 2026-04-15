@@ -12,6 +12,6 @@ RUN npm install
 #copy source code
 COPY . .
 #expose port and start application
-EXPOSE 4000
+EXPOSE 3000
 #run the applicationgit 
 CMD ["npm", "start"]

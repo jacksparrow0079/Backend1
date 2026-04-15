@@ -1,6 +1,7 @@
 const Channel = require("../models/Channel.model");
 const User =require("../models/User.model")
 const mongoose=require("mongoose")
+const redis = require("../utils/redis");
 
 const createChannel = async (req, res) => {
   try {
@@ -29,6 +30,20 @@ const createChannel = async (req, res) => {
 const getAccountdetails =async(req,res)=>{
     try{
         const{userId}=req.body;
+
+        const cachedKey = `account_details:${userId}`;
+        try{
+
+          const cachedData = await redis.get(cachedKey);
+
+        if(cachedData){
+            const cachedResult = JSON.parse(cachedData);
+            return res.status(200).json({message:"data fetched from cache",data:cachedResult.data, userDetails:cachedResult.userDetails});}
+
+        }catch(err){
+            console.log("redis error",err);
+        }
+        const userDetails=await User.findById(userId);
         const data=await User.aggregate([
             // stage
             {
@@ -60,16 +75,38 @@ const getAccountdetails =async(req,res)=>{
                 }
              },
         ])
-        return res.status(200).json({message:"data fetched",data})
+        // store result in redis cache with an expiration time of 1 hour (3600 seconds)
+        await redis.set(cachedKey, JSON.stringify({data,userDetails}), 'EX', 100);
+        return res.status(200).json({message:"data fetched",data,userDetails});
 
     }catch(err){
         console.log("err",err)
+          return res.status(500).json({
+            message: "Internal server error",
+          });
     }
 };
 // controller to get video stast response everything at one time 
 const getAllDetails = async (req, res) => {
   try {
     const { userId } = req.params;
+
+    // create a key
+
+    const redisKey = `all_details:${userId}`;
+
+    try{
+
+       const redisData = await redis.get(redisKey);
+
+       if(redisData){
+        const parsedData = JSON.parse(redisData);
+        return res.status(200).json({message : "All Details Data from Redis", 
+          all_details:  parsedData})
+       }
+    }catch(err){
+      console.log("redis error", err)
+    }
 
     const data = await User.aggregate([
       {
@@ -150,9 +187,13 @@ const getAllDetails = async (req, res) => {
     
     ]);
 
+    // store it in redis
+
+    await redis.set(redisKey, JSON.stringify(data), "EX", 100)
+
     return res.status(200).json({
       message: "Details fetched successfully",
-      data
+      all_data: data
     });
 
   } catch (error) {

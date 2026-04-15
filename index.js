@@ -18,13 +18,15 @@ mongoose.connect(process.env.MONGO_URI)
 }).catch((err)=>{
     console.log("err",err.message);
 })
+
 app.use("/api",userRouter);
+
 app.use("/api/channel",channelRouter);
 app.get("/",(req,res)=>{
     return res.status(200).json({message:"welcome to youtube"});
 })
 app.use("/api/video",VideoRouter);
 
-app.listen(4000,()=>{
+app.listen(3000,()=>{
     console.log("server is running on port "+ PORT);
 })
